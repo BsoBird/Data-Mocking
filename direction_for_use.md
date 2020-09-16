@@ -91,9 +91,9 @@ Example:`eval(1+2)`
 body：
 
     {
-        content: INSERT INTO table_name (name,age,dateTime) VALUES ($FUNC{name($REF{p1})}, $FUNC{age()},$FUNC{dateTimeNow()}),
+        content:"INSERT INTO table_name (name,age,dateTime) VALUES ('$FUNC{name($REF{p1})}', $FUNC{age()},'$FUNC{dateTimeNow()}')",
         numb: 5,
-        function_dic:{p1:$FUNC{name()}}
+        function_dic:"{p1:$FUNC{name()}}"
     }
     
 
@@ -101,14 +101,14 @@ response:
 
     {
         result: [
-            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 23,2020-07-31 00:35:55),
-            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 20,2020-07-31 00:35:55),
-            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 39,2020-07-31 00:35:55),
-            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 27,2020-07-31 00:35:55),
-            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 27,2020-07-31 00:35:55)
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 23,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 20,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 39,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')"
         ],
         num: 5,
-        dateTime: 2020-07-31 00:35:55
+        dateTime:"2020-07-31 00:35:55"
     }
 
 请求参数描述如下:  
