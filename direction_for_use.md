@@ -31,8 +31,8 @@
 
 ##### 4、术语：
 
-*   函数变量:模版和词典中以`&quot;$FUNC{&quot;`开头,以`&quot;}&quot;`结尾的字符串是一个函数变量.形如：`$FUNC{intRand()}`. 其中,intRand()为内置函数. 支持函数嵌套.
-*   模板变量：模版中以`&quot;$REF{&quot;`开头，以`&quot;}&quot;`结尾的字符串是一个词典变量。形如：`$Dic{name}`,其中，name为词典中的一个词典名。
+*   函数变量:模版和词典中以`$FUNC{`开头,以`}`结尾的字符串是一个函数变量.形如：`$FUNC{intRand()}`. 其中,intRand()为内置函数. 支持函数嵌套.
+*   模板变量：模版中以`$REF{`开头，以`}`结尾的字符串是一个词典变量。形如：`$Dic{name}`,其中，name为词典中的一个词典名。
  example:`$FUNC{dateStringWithRange(long(123456789),$FUNC{timestamp()})}`
 
 ##### 5、内置函数
@@ -91,24 +91,24 @@ Example:`eval(1+2)`
 body：
 
     {
-        &quot;content&quot;: &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()}, &#39;$FUNC{dateTimeNow()}&#39;)&quot;,
-        &quot;numb&quot;: 5,
-        &quot;function_dic&quot;:{&quot;p1&quot;:&quot;$FUNC{name()}&quot;}
+        content: INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},$FUNC{dateTimeNow()}&#39;),
+        numb: 5,
+        function_dic:{p1:$FUNC{name()}}
     }
-    `</pre>
+    
 
-    response:
+response:
 
-    <pre>`{
-        &quot;result&quot;: [
-            &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23, &#39;2020-07-31 00:35:55&#39;)&quot;,
-            &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20, &#39;2020-07-31 00:35:55&#39;)&quot;,
-            &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39, &#39;2020-07-31 00:35:55&#39;)&quot;,
-            &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27, &#39;2020-07-31 00:35:55&#39;)&quot;,
-            &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27, &#39;2020-07-31 00:35:55&#39;)&quot;
+    {
+        result: [
+            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23,2020-07-31 00:35:55&#39;),
+            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20,2020-07-31 00:35:55&#39;),
+            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39,2020-07-31 00:35:55&#39;),
+            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,2020-07-31 00:35:55&#39;),
+            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,2020-07-31 00:35:55&#39;)
         ],
-        &quot;num&quot;: 5,
-        &quot;dateTime&quot;: &quot;2020-07-31 00:35:55&quot;
+        num: 5,
+        dateTime: 2020-07-31 00:35:55
     }
 
 请求参数描述如下:  
