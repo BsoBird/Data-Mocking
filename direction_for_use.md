@@ -91,7 +91,7 @@ Example:`eval(1+2)`
 body：
 
     {
-        content: INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},$FUNC{dateTimeNow()}&#39;),
+        content: INSERT INTO table_name (name,age,dateTime) VALUES ($FUNC{name($REF{p1})}, $FUNC{age()},$FUNC{dateTimeNow()}),
         numb: 5,
         function_dic:{p1:$FUNC{name()}}
     }
@@ -101,11 +101,11 @@ response:
 
     {
         result: [
-            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23,2020-07-31 00:35:55&#39;),
-            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20,2020-07-31 00:35:55&#39;),
-            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39,2020-07-31 00:35:55&#39;),
-            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,2020-07-31 00:35:55&#39;),
-            INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,2020-07-31 00:35:55&#39;)
+            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 23,2020-07-31 00:35:55),
+            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 20,2020-07-31 00:35:55),
+            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 39,2020-07-31 00:35:55),
+            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 27,2020-07-31 00:35:55),
+            INSERT INTO table_name (name,age,dateTime) VALUES (梁强, 27,2020-07-31 00:35:55)
         ],
         num: 5,
         dateTime: 2020-07-31 00:35:55
