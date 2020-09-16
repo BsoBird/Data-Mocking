@@ -32,8 +32,8 @@
 ##### 4、术语：
 
 *   函数变量:模版和词典中以`$FUNC{`开头,以`}`结尾的字符串是一个函数变量.形如：`$FUNC{intRand()}`. 其中,intRand()为内置函数. 支持函数嵌套.
-*   模板变量：模版中以`$REF{`开头，以`}`结尾的字符串是一个词典变量。形如：`$Dic{name}`,其中，name为词典中的一个词典名。
- example:`$FUNC{dateStringWithRange($FUNC{long(123456789)},$FUNC{timestamp()},$Dic{test_name})}`
+*   模板变量：模版中以`$REF{`开头，以`}`结尾的字符串是一个词典变量。形如：`$REF{name}`,其中，name为词典中的一个词典名。
+ example:`$FUNC{dateStringWithRange($FUNC{long(123456789)},$FUNC{timestamp()},$REF{test_name})}`
 
 ##### 5、内置函数
 
