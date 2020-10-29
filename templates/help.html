@@ -1,102 +1,148 @@
-<!--<link href="http://statics.1024tools.com/css/markdown/github.css" rel="stylesheet" />-->
-<html>
 <body bgcolor="#d0d0d0">
-<h1 id="data-processer">Data-Processer</h1>
-<h2>Author:@wenkai.hou,@yongzhi.shao,@bo.yang</h2>
-<h2 id="-">简介</h2>
-<h5 id="1-data-processer-">1、Data-Processer是什么？</h5>
+<h1>Data-Mocking</h1>
+
+<h2>简介</h2>
+
+<h5>1、Data-Mocking是什么？</h5>
+
 <p>  他是一个模拟数据生成器。我们在测试过程中，产生完整、全面的真实数据可能比较困难。
     我们可以根据需求，创建对应的模版和词典，利用数据模拟生成器生成我们需要的模拟数据。</p>
-<h5 id="2-data-processer-">2、Data-Processer能做什么？</h5>
-<p>  他能够根据构建的模版和词典，生成我们需要的数据。kafka需要的数据，hive中文件存储数据，接口中JSON数据等等，只要有数据格式，都可以设置成需要的模板。</p>
-<h5 id="data-processer-">Data-Processer三个应用场景：</h5>
-<ul>
-    <li><p>测试场景</p>
-        <p>测试过程中，我们需要验证数据后端的功能或性能，此时，需要降低与数据产生端的耦合，那么需要一个稳定优秀的数据生成器，来持续的不间断的产生正确的数据，和特殊情况下的异常数据。</p>
-    </li>
-    <li><p>持续集成场景</p>
-        <p>在整个持续集成场景中，一个或多个模块组成一个平台，需要有源源不断的数据进入持续集成环境，用以自动化地完成测试和迭代工作，使用Data-Processer则可以通过数据样本的指定和简单的编码，非常简单地完成这个需求。</p>
-    </li>
-    <li><p>生产场景</p>
-        <p>在一个项目完成测试和迭代，发布到生产环境之后，通常也需要进行持续的功能或可用性监测，那么则需要有各种正常或异常数据按照某种规则和定义，持续稳定地生产并送回平台，此时将持续集成场景中的case，只需通过简单配置，则可以进行生产的验证，以满足这个需求。</p>
-    </li>
-</ul>
-<h5 id="3-">3、架构</h5>
-<p>  数据生成器包括：模版变量提取，模版变量执行，模版变量替换三部分组成.</p>
-<h5 id="4-">4、术语：</h5>
-<ul>
-    <li>函数变量:模版和词典中以<code>&quot;$FUNC{&quot;</code>开头,以<code>&quot;}&quot;</code>结尾的字符串是一个函数变量.形如：<code>$FUNC{intRand()}</code>. 其中,intRand()为内置函数. 支持函数嵌套.</li>
-    <li>模板变量：模版中以<code>&quot;$REF{&quot;</code>开头，以<code>&quot;}&quot;</code>结尾的字符串是一个词典变量。形如：<code>$REF{name}</code>,其中，name为词典中的一个词典名。
-        example:<code>$FUNC{name($REF{name1})}</code>         </li>
-</ul>
-<h5 id="5-">5、内置函数</h5>
-<ul>
-    <li><p>可调用任意python基本函数,支持pyhton风格的函数传参.<br>Example:<code>$FUNC{name(a=1,b=2)}</code></p>
-    </li>
-    <li><p>eval(str)<br>可执行任意python语句的表达式,若无法执行,则返回原值.<br>Example:<code>eval(1+2)</code></p>
-    </li>
-    <li><p>concat(*args)<br>将传入的参数列表作为字符串拼接.</p>
-    </li>
-    <li><p>concat_ws(tag, *args)<br>将传入的参数列表按照指定的分隔符拼接.</p>
-    </li>
-    <li><p>Faker 模块中的任意mock数据的方法(目前faker的locate在这里被设置为了<code>zh-ch</code>,暂不支持变更locate).<br>详见<code>https://pypi.org/project/Faker/</code><br>中文相关文档<code>https://zhuanlan.zhihu.com/p/87203290</code></p>
-    </li>
-    <li><p>name(arg=None)若传入值,则返回传入值.否则随机生成name.</p>
-    </li>
-    <li><p>company(arg=None)<br>获取公司名称,若传入参数,则返回传入值,否则将随机生成.</p>
-    </li>
-    <li><p>age(arg=None)<br>获取随机的年龄,若传入参数,则返回传入值,否则将随机生成15~60内的数字.</p>
-    </li>
-    <li><p>Id(arg=None)<br>获取随机的ID,若传入参数,则返回传入值,否则将随机生成111111111111111111~911111111111111111内的数字.</p>
-    </li>
-    <li><p>timeNow(arg=None)<br>若传入参数,则返回传入值,否则将生成当前时间的时分秒.</p>
-    </li>
-    <li><p>dateNow(arg=None)<br>若传入参数,则返回传入值,否则将生成当前时间的年月日.</p>
-    </li>
-    <li><p>dateTimeNow(arg=None)<br>若传入参数,则返回传入值,否则将生成当前时间的年月日时分秒.</p>
-    </li>
-    <li><p>quote_escaped(str_val)<br>将文字中的没有被转义的单引号与双引号进行转义.</p>
-    </li>
-    <li><p>quote_replacement(str_val)<br>将字符串中的 $ 与 \ 进行转义.</p>
-    </li>
-    <li><p>range_id(start=None, end=None)<br>产生 start ~ end 之间的随机数,start缺省则取值为0,end缺省则取值为9223372036854775807</p>
-    </li>
-    <li><p>random_enum(*args)<br>随机返回传入的参数列表中的其中一个值</p>
-    </li>
-</ul>
-<h5 id="6-">6、怎么用？</h5>
-<p>请使用post请求:<p>
-<li>http://host:port/mockData  产生N条不一样的数据.</li>
-<li>http://host:port/mockData/allsame  产生N条一样的数据.</li>
-<br>
-<p>下面是一个DEMO演示. (服务部署于: host=192.168.177.108,port=8001)</p>
-<p>body：</p>
-<pre><code class="lang-json">{
-    &quot;content&quot;: &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()}, &#39;$FUNC{dateTimeNow()}&#39;)&quot;,
-    &quot;numb&quot;: 5,
-    &quot;function_dic&quot;:{&quot;p1&quot;:&quot;$FUNC{name()}&quot;}
-}
-</code></pre>
-<p>response:</p>
-<pre><code class="lang-json">{
-    &quot;result&quot;: [
-        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23, &#39;2020-07-31 00:35:55&#39;)&quot;,
-        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20, &#39;2020-07-31 00:35:55&#39;)&quot;,
-        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39, &#39;2020-07-31 00:35:55&#39;)&quot;,
-        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27, &#39;2020-07-31 00:35:55&#39;)&quot;,
-        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27, &#39;2020-07-31 00:35:55&#39;)&quot;
-    ],
-    &quot;num&quot;: 5,
-    &quot;dateTime&quot;: &quot;2020-07-31 00:35:55&quot;
-}
-</code></pre>
-<p>请求参数描述如下:  </p>
-<ul>
-    <li><code>content</code> 待替换的模板</li>
-    <li><code>numb</code> 一次生成多少条数据,一次生成不能超过1W条</li>
-    <li><code>function_dic</code> 模板方法列表,模板方法可以保证在一次mock数据的过程中,同样的模板生成的值始终相同.
-        该参数可缺省,若缺省该参数,则不执行模板替换.若传入了该参数,但是传入的字典中没有<code>content</code>中出现的待替换的模板,则异常.暂不支持模板方法内使用<code>&quot;$REF{&quot;</code>引用其他的模板方法</li>
-</ul>
 
+<h5>2、Data-Mocking能做什么？</h5>
+
+<p>  他能够根据构建的模版和词典，生成我们需要的数据。kafka需要的数据，hive中文件存储数据，接口中JSON数据等等，只要有数据格式，都可以设置成需要的模板。</p>
+
+<h5>Data-Mocking三个应用场景：</h5>
+
+<ul><li><p>测试场景</p><p>测试过程中，我们需要验证数据后端的功能或性能，此时，需要降低与数据产生端的耦合，那么需要一个稳定优秀的数据生成器，来持续的不间断的产生正确的数据，和特殊情况下的异常数据。</p></li><li><p>持续集成场景</p><p>在整个持续集成场景中，一个或多个模块组成一个平台，需要有源源不断的数据进入持续集成环境，用以自动化地完成测试和迭代工作，使用Data-Mocking则可以通过数据样本的指定和简单的编码，非常简单地完成这个需求。</p></li><li><p>生产场景</p><p>在一个项目完成测试和迭代，发布到生产环境之后，通常也需要进行持续的功能或可用性监测，那么则需要有各种正常或异常数据按照某种规则和定义，持续稳定地生产并送回平台，此时将持续集成场景中的case，只需通过简单配置，则可以进行生产的验证，以满足这个需求。</p></li></ul>
+
+<h5>3、架构</h5>
+
+<p>  数据生成器包括：模版变量提取，模版变量执行，模版变量替换三部分组成.</p>
+
+<h5>4、术语：</h5>
+
+<ul><li>函数变量:模版和词典中以<code>$FUNC{</code>开头,以<code>}</code>结尾的字符串是一个函数变量.形如：<code>$FUNC{intRand()}</code>. 其中,intRand()为内置函数. 支持函数嵌套.  </li><li>预编译函数变量:模版和词典中以<code>$FUNC_PRE{</code>开头,以<code>}</code>结尾的字符串是一个预编译函数变量.形如：<code>$FUNC_PRE{intRand()}</code>. 其中,intRand()为内置函数. 支持函数嵌套.预编译函数只在子模板执行的情况下才会生效,一般场景下他就是一个字符串。</li><li>模板变量：模版中以<code>$REF{</code>开头，以<code>}</code>结尾的字符串是一个词典变量。形如：<code>$REF{name}</code>,其中，name为词典中的一个词典名。允许模板变量相互引用。
+    example:<code>$FUNC{dateStringWithRange($FUNC{long(123456789)},$FUNC{timestamp()},$REF{test_name})}</code></li></ul>
+
+<h5>5、内置函数</h5>
+
+<ul><li><p>可调用任意python基本函数,支持pyhton风格的函数传参.
+    Example:<code>$FUNC{name(a=1,b=2)}</code></p></li><li><p>eval(str)
+    可执行任意python语句的表达式,若无法执行,则返回原值.
+    Example:<code>eval(1+2)</code></p></li><li><p>concat(*args)
+    将传入的参数列表作为字符串拼接.</p></li><li><p>concat_ws(tag, *args)
+    将传入的参数列表按照指定的分隔符拼接.</p></li><li><p>Faker 模块中的任意mock数据的方法(目前faker的locate在这里被设置为了<code>zh-ch</code>,暂不支持变更locate).
+    详见<code>https://pypi.org/project/Faker/</code>
+    中文相关文档<code>https://zhuanlan.zhihu.com/p/87203290</code></p></li><li><p>name(arg=None)若传入值,则返回传入值.否则随机生成name.</p></li><li><p>company(arg=None)
+    获取公司名称,若传入参数,则返回传入值,否则将随机生成.</p></li><li><p>age(arg=None)
+    获取随机的年龄,若传入参数,则返回传入值,否则将随机生成15~60内的数字.</p></li><li><p>Id(arg=None)
+    获取随机的ID,若传入参数,则返回传入值,否则将随机生成111111111111111111~911111111111111111内的数字.</p></li><li><p>timeNow(arg=None)
+    若传入参数,则返回传入值,否则将生成当前时间的时分秒.</p></li><li><p>dateNow(arg=None)
+    若传入参数,则返回传入值,否则将生成当前时间的年月日.</p></li><li><p>dateTimeNow(arg=None)
+    若传入参数,则返回传入值,否则将生成当前时间的年月日时分秒.  </p></li><li><p>quote<em>escaped(str</em>val)
+    将文字中的没有被转义的单引号与双引号进行转义.  </p></li><li><p>quote<em>replacement(str</em>val)
+    将字符串中的 $ 与 \ 进行转义.  </p></li><li><p>mock<em>default(mock</em>template,exec<em>times,result</em>concat_separator)
+    我们支持在模板中利用另一个模板来生成数据,这种场景通常用于生成有嵌套结构,且内外层数据之间有关联关系。参数描述如下:  </p><ul><li><code>mock_template</code> : 传入的json模板,模板内容参照<code>章节6</code>  </li><li><code>exec_times</code> : 模板执行次数,若传入-1且模板内<code>numb</code>属性大于0,则使用<code>numb</code></li><li><p><code>result_concat_separator</code> : 执行结果拼接的间隔符。因为生成的结果一定是字符串,所以只提供拼接功能。</p></li></ul></li><li><p>mock<em>all</em>single(mock<em>template,exec</em>times,result<em>concat</em>separator)<br/>与<code>mock_default</code>方法接近,但是它与上面的区别是每次执行模板都是独立执行,保证不会生成相同数据</p></li></ul>
+
+<h5>6、基本使用指南</h5>
+
+<p>请使用post请求:<br/>- <code>http://host:port/help</code>  查看说明文档<br/>- <code>http://host:port/mockData</code>  产生N条不相同的数据
+    - <code>http://host:port/mockData/allsame</code>  产生N条完全相同的数据</p>
+
+<p>下面是一个DEMO演示.  </p>
+
+<p>body：</p>
+
+<pre><code>{
+    content:&quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},&#39;$FUNC{dateTimeNow()}&#39;)&quot;,
+    numb: 5,
+    function_dic:&quot;{p1:$FUNC{name()}}&quot;
+}</code></pre>
+
+<p>response:</p>
+
+<pre><code>{
+    result: [
+        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23,&#39;2020-07-31 00:35:55&#39;)&quot;,
+        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20,&#39;2020-07-31 00:35:55&#39;)&quot;,
+        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39,&#39;2020-07-31 00:35:55&#39;)&quot;,
+        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,&#39;2020-07-31 00:35:55&#39;)&quot;,
+        &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,&#39;2020-07-31 00:35:55&#39;)&quot;
+    ],
+    num: 5,
+    dateTime:&quot;2020-07-31 00:35:55&quot;
+}</code></pre>
+
+<p>请求参数描述如下:  </p>
+
+<ul><li><code>content</code> 待替换的模板</li><li><code>numb</code> 一次生成多少条数据,一次生成不能超过1W条</li><li><code>function_dic</code> 模板方法列表,可缺省。模板方法可以保证在一次mock数据的过程中,同样的模板生成的值始终相同.
+    该参数可缺省,若缺省该参数,则不执行模板替换.若传入了该参数,但是传入的字典中没有<code>content</code>中出现的待替换的模板,则异常.支持模板方法之间相互引用.  </li><li><code>circular_reference_parse_max_times</code> 循环引用最大解析次数,默认为1,可缺省。由于在<code>function_dic</code>中,我们允许模板方法之间相互引用,那么就存在N个模板相互引用形成循环引用的问题。
+    由于无限解析会出现死循环,这里我们做出限制,对于模板引用的解析只能执行N次,N次过后不再执行解析,会将形如<code>$REF{XXX}</code>的串直接返回。由于每解析一次,会将原串替换,最终并不能保证返回使用者处时传入的<code>$REF{XXX}</code>串。
+    ##### 7、高阶使用指南<ul><li>空白符的使用。由于在内部实现中,所有的方法的入参全部被trim了一次,因此,如果想实现类似给一个字符串拼接一个空白字符的功能,类似<code>concat(&#39;   &#39;,&#39;a&#39;)</code>,是不能直接使用Function实现的。
+        但是可以稍作变通,我们可以采取形如这样的方式实现<code>$FUNC{t1()}       $FUNC{t2()}</code>,在模板中留空白,这样就可以变相实现功能</li><li>模板方法列表。对于过于复杂的模板片段,可以将它写入模板方法列表,在主模板中引用该片段即可,但这样做之后,该批次生成的数据,被引用的模板方法会生成完全相同的数据,若想生成不同的数据,需要调用多次。  </li><li>子模板使用指南。我们支持使用<code>mock_default</code>和<code>mock_all_single</code> 方法通过子模板来生成数据,并将结果在主模板中使用。
+        对于子模板,由于其可能较为复杂,我们最好将它也写入模板方法列表中。子模板的使用需要注意如下几点:<ul><li>由于整个模板引擎执行的过程中,是按照 <code>执行模板方法列表</code> -&gt; <code>将执行模板方法列表执行结果替换主模板</code>  -&gt; <code>执行模板中出现的方法(自顶向下LL)</code>  -&gt; <code>将执行方法的结果替换模板</code>
+            这样的顺序执行的。如果子模板中存在方法,那么会被优先执行,最终导致子模板执行的结果可能是完全一致的。若需要避免这种情况,子模板中的函数定义应使用<code>$FUNC_PRE{</code>.
+            底层方案:<code>$FUNC_PRE{</code>不会触发方法执行,所有可以保证形如<code>$FUNC_PRE{xxx}</code>的串可以原样传入方法,在<code>mock_default</code>和<code>mock_all_single</code>方法中,会先将<code>$FUNC_PRE{</code>替换为<code>$FUNC</code>,
+            这样再执行子模板就又可以触发方法执行。  </li><li>子模板中若存在方法引用,会使用父模板中的模板方法列表进行替换,不会使用自己的,以此递归向下(如果你的子模板还套了子模板)</li></ul></li></ul></li></ul>
+
+<p><code>Example</code>(生成嵌套结构的,内外有关联关系的主子订单结构):</p>
+
+<p>请求体:</p>
+
+<pre><code>{
+content:&quot;{\&quot;num\&quot;:$REF{num},\&quot;tid\&quot;:\&quot;$REF{tid}\&quot;,\&quot;orders\&quot;:[$FUNC{mock_all_single($REF{order_param},$REF{num},\,)}]}&quot;,
+ numb: 5,
+ function_dic:&quot;{
+    &quot;tid&quot;: &quot;$FUNC{md5()}&quot;,
+    &quot;num&quot;:5,
+    &quot;circular_reference_parse_max_times&quot;:10,
+    &quot;order_param&quot;: &quot;{\&quot;content\&quot;: \&quot;{\\\&quot;oid\\\&quot;: \\\&quot;$FUNC_PRE{md5()}\\\&quot;, \\\&quot;tid\\\&quot;: \\\&quot;$REF{tid}\\\&quot;}\&quot;, \&quot;numb\&quot;: 2, \&quot;circular_reference_parse_max_times\&quot;: 10}&quot;
+}&quot;
+}</code></pre>
+
+<p>结果(主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):</p>
+
+<pre><code>{
+    &quot;num&quot;: 5,
+    &quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;,
+    &quot;orders&quot;: [{
+		&quot;oid&quot;: &quot;b61668137d1b6f863168dfe769dc1209&quot;,
+		&quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;
+	}, {
+		&quot;oid&quot;: &quot;c5f3edcf182b4db2c3a8b5b2c9ff0c7e&quot;,
+		&quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;
+	}, {
+		&quot;oid&quot;: &quot;ca6eab4f0eb7a9ea96d7c049fd898675&quot;,
+		&quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;
+	}, {
+		&quot;oid&quot;: &quot;cd2dd0fc12e2dc683a228d5b0cf921cf&quot;,
+		&quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;
+	}, {
+		&quot;oid&quot;: &quot;89f49ce60dc5996e870d172380fa8d33&quot;,
+		&quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;
+	}]
+}</code></pre>
+
+<h3>安装：</h3>
+
+<p>安装：<br/><code>
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple fastapi pydantic faker
+    pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple  uvicorn
+</code></p>
+
+<h3>启动：</h3>
+
+<p>在api.py目录下执行：
+    <code>
+        uvicorn api:app --port 8001 --host 0.0.0.0 --reload
+    </code></p>
+
+<h3>结构说明：</h3>
+
+<p><code>
+    base目录        -模板处理，将文件解析成可识别函数
+    func_maker      -函数集，造数据所有的函数都来自这里
+    api.py          -接口启动文件
+</code></p>
 </body>
-</html>

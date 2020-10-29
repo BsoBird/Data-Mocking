@@ -26,10 +26,3 @@ def parse_string_value(str_value):
 	except SyntaxError:
 		# e.g. $var, ${func}
 		return str_value
-
-
-if __name__ == '__main__':
-	a = '1234+1234'
-	print(parse_string_value(a))
-	b = "{\"content\": \"\x01\",\"numb\": 10}"
-	print(repair(b))

@@ -48,7 +48,7 @@ def parse_function(content):
                 function_meta["args"].append(value)
             else:
                 key = arg[0:equal_str_start_index]
-                value = run(arg[equal_str_start_index + 1:len(arg)],1)[0]
+                value = run(arg[equal_str_start_index + 1:len(arg)], 1)[0]
                 # key, value = arg.split('=')
                 parsed_value = run(value, 1)[0]
                 function_meta["kwargs"][key] = parse_string_value(parsed_value)
@@ -104,6 +104,17 @@ def run(content, numb):
     return res
 
 
+def replace_all_dic_ref_with_max_times(str_val, circular_reference_parse_max_times=1, ref_dic={}):
+    if circular_reference_parse_max_times == 1:
+        return replace_all_dic_ref(str_val, ref_dic)
+    for i in range(1,circular_reference_parse_max_times+1):
+        start_index = get_index(ref_start, str_val)
+        if start_index <= -1:
+            return str_val
+        str_val = replace_all_dic_ref(str_val, ref_dic)
+    return str_val
+
+
 def replace_all_dic_ref(str_val, ref_dic={}):
     ref_val_mapping_dic = {}
     if ref_dic is None or len(ref_dic) == 0:
@@ -125,64 +136,14 @@ def replace_all_dic_ref(str_val, ref_dic={}):
                 start_index = get_index(ref_start, str_val, start_index + 1)
                 ref_name = ref_dic_str[ref_dic_str.index("{") + 1:ref_dic_str.rindex("}")]
                 ref_execute_val = run(ref_dic[ref_name], 1)[0]
+                ref_dic[ref_name] = ref_execute_val
                 if ref_execute_val is not None:
                     ref_val_mapping_dic[ref_dic_str] = ref_execute_val
                 break
-            if i == len(str_val)-1:
+            if i == len(str_val) - 1:
                 start_index = len(str_val)
         if flag != 0:
             raise Exception('Parentheses do not match')
     for key in ref_val_mapping_dic:
         str_val = str_val.replace(key, ref_val_mapping_dic[key])
     return str_val
-
-
-if __name__ == '__main__':
-    # str_val = "t1=======$FUNC{t2(a=1)}"
-    str_val = "$FUNC{date_between(start_date='-5y', end_date='today')}"
-    func_start_index = get_index(func_start, str_val)
-    equal_start_index = get_index('=', str_val)
-    if equal_start_index < 0 or func_start_index < equal_start_index:
-        print(str_val)
-    else:
-        print(str_val[0:equal_start_index])
-        print(str_val[equal_start_index + 1:len(str_val)])
-    # print(quote_replacement('$test'))
-    # dic_test={}
-    # str_val_1 = "'n1'"
-    # dic_test['t1']=str_val_1
-    # print(f"""{dic_test}""")
-    # print(quote_escaped("['工具直接为了游戏帮助生活你的.', '部分到了不要出现.', '帮助计划北京生产经济.']"))
-    # template = "$REF{msg_id},$REF{event_date},$REF{process_time},$REF{data_type},$FUNC{concat('TAOBAO|',$REF{trade_id},'|',$REF{shop_tag})},$FUNC{concat($REF{event_date},' 13:50:27')},$FUNC{concat('TAOBAO|',$REF{trade_id},'|',$REF{shop_tag},'|',$REF{event_date})},$REF{table_id},$REF{rw},,$REF{tenant},$REF{shop_tag},$REF{group_id}"
-    # template = "$REF{msg_id},$REF{event_date},$REF{process_time},$REF{data_type},$FUNC{concat('TAOBAO|',$REF{trade_id},'|',$REF{shop_tag})},$FUNC{concat($REF{event_date},' 13:50:27')},$FUNC{concat('TAOBAO|',$REF{trade_id},'|',$REF{shop_tag},'|',$REF{event_date})},$REF{table_id},$REF{rw},,$REF{tenant},$REF{shop_tag},$REF{group_id}"
-    # template = "$FUNC{concat(\'TAOBAO|\',676124699114,\'|\',51456122,\'|\',2017-11-10)}"\
-    # template = "$FUNC{concat(TAOBAO|,$REF{trade_id},|,$REF{shop_tag})},'13:50:27',$FUNC{concat(TAOBAO|,$REF{trade_id},|,$REF{shop_tag},|,$REF{event_date})}"
-    template="$FUNC{date_between(start_date=-5d, end_date=today)}"
-    dic = {
-        "msgId":"$FUNC{md5()}",
-        "serviceCode":"$FUNC{random_enum(TEST01,TEST02,TEST03)}",
-        "eventDate":"$FUNC{random_enum(2020-07-07,2020-07-06,2020-07-05)}",
-        "processTime":"$FUNC{date_between(start_date=-5d, end_date=today)}",
-        "dataType":"standard_trade",
-        "tradeId":"$FUNC{credit_card_number()}",
-        "shopTag":"$FUNC{ean8()}",
-        "tableId":"$FUNC{range_id(start=0,end=1000)}",
-        "modify":"$FUNC{random_enum(2020-07-07 13:56:21,2020-07-06 13:56:21,2020-07-05 13:56:21)}",
-        "type":"$FUNC{range_id(start=0,end=1)}",
-        "parentId":"null",
-        "parentModify":"null",
-        "tenant":"$FUNC{concat(TENANT,$FUNC{range_id(start=0,end=10)})}",
-        "groupId":"$FUNC{random_enum(21836,21774,20720,21284,21818,21592,21282,21000)}"
-    }
-    print({"result": run(template,1)})
-    # print(concat())
-    # str_json = "{p1=$FUNC{t2(a=1)}}"
-    # func_str_2 = "$REF{p}$FUNC{concat($FUNC{name($REF{p})},s,f,ffffssda)}#$REF{p}$FUNC{funcc(123,a=123,b=222)}asda$REF{p}sda$FUNC{age()}$FUNC{name()}"
-    # p2f = eval(str_json)
-    # p2f = ast.literal_eval(f"""{str_json}""")
-    # print(p2f)
-    # print(p2f['p1'])
-    # print(replace_all_dic_ref(func_str_2, {"pp": "ad"}))
-    # for i in range(1):
-    #     test = "$FUNC{concat($FUNC{name()},s,f,ffffssda)}#$FUNC{funcc(123,a=123,b=222)}asdasda$FUNC{age()}$FUNC{name()}"
-    #     print(run(replace_all_dic_ref(func_str_2, {"p": "ad"}), 10))

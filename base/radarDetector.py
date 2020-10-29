@@ -29,23 +29,39 @@ def find_all_function(str_val):
 
 def find_all_params(str_val: str):
     list_param = []
+    add_separator:bool = False
     if str_val == '':
         return list_param
     if str_val[len(str_val) - 1] != ',':
         str_val = str_val + ","
+        add_separator = True
     start = 0
     flag = 0
     for i in range(len(str_val)):
+        previous_char = ""
         char = str_val[i]
+        if i > 0:
+            previous_char = str_val[i-1]
         if char == '{' or char == '(':
             flag += 1
         if char == '}' or char == ')':
             flag -= 1
-        if (char == ',' and flag == 0) or i == len(str_val) - 1:
-            list_param.append(str_val[start:i].strip())
+        if (char == ',' and flag == 0 and previous_char!='\\') or i == len(str_val) - 1:
+            if i < len(str_val) - 1:
+                value = str_val[start:i].strip()
+            else:
+                value = str_val[start:i+1].strip()
+            if value == '\\,':
+                value = ','
+            list_param.append(value)
             start = i + 1
     if flag != 0:
         raise Exception('Parentheses do not match')
+    if add_separator:
+        t = len(list_param)
+        final_param = list_param[t-1]
+        final_param = final_param[0:-1]
+        list_param[t-1] = final_param
     return list_param
 
 
@@ -54,12 +70,3 @@ def get_index(substr, original_str, begin=0):
         return original_str.index(substr, begin)
     except ValueError:
         return -1
-
-
-if __name__ == '__main__':
-    # func_str_1 = "$FUNC{concat(s,s,f,ffffssda)}"
-    # print(func_str_1[func_str_1.index("{") + 1:func_str_1.index("(")])
-    # print(func_str_1[func_str_1.index("(") + 1:func_str_1.rindex(")")])
-    # print(find_all_params("${t1(${t2(1)})}"))
-    print(find_all_function(
-        "$FUNC{concat(TAOBAO|,$REF{trade_id},|,$REF{shop_tag})},'13:50:27',$FUNC{concat(TAOBAO|,$REF{trade_id},|,$REF{shop_tag},|,$REF{event_date})}"))

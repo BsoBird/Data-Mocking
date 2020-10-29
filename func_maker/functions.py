@@ -3,6 +3,7 @@ from random import randint
 import re
 import time
 import sys
+
 from base.parser import parse_string_value
 
 fake = Faker("zh-cn")
@@ -32,12 +33,19 @@ def range_id(start=None, end=None):
 
 
 def random_enum(*args):
-    return '' if args is None or len(args)==0 else args[randint(0, len(args) - 1)]
+    return '' if args is None or len(args) == 0 else args[randint(0, len(args) - 1)]
 
 
 def Id(arg=None):
     return arg if arg else randint(111111111111111111, 911111111111111111)
 
+def concat_list_ws(tag, args=[]):
+    new_list = []
+    for unit in args:
+        new_list.append(unit)
+        new_list.append(tag)
+    new_list.pop()
+    return concat(*new_list)
 
 def concat_ws(tag, *args):
     new_list = []
@@ -93,11 +101,42 @@ def dateNow(arg=None):
 def dateTimeNow(arg=None):
     return arg if arg else time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-# def executeFakeFunc(funcName=None,param=None):
-#     if funcName is None:
-#         return None
-#     else:
-#         if param is None:
-#             return getattr(fake, funcName)()
-#         params = ast.literal_eval(f"""{param}""")
-#         return getattr(fake, funcName)(**params)
+
+def mock_default(params="", times=-1,separator=""):
+    import json
+    from base.replaceFunc import replace_all_dic_ref_with_max_times, run
+    if params == "":
+        return None
+    params = params.replace("$FUNC_PRE{","$FUNC{")
+    params_dic = json.loads(params)
+    times = int(times)
+    numb = int(params_dic.setdefault('numb', -1))
+    if times == -1 and numb > 0:
+        times = int(params_dic['numb'])
+    return concat_list_ws(separator,run(
+        replace_all_dic_ref_with_max_times(params_dic.setdefault('content',''), params_dic.setdefault('circular_reference_parse_max_times',1),
+                                           params_dic.setdefault('function_dic','')),
+        times))
+
+
+def mock_all_single(params="", times=-1,separator=""):
+    import json
+    import copy
+    from base.replaceFunc import replace_all_dic_ref_with_max_times, run
+    if params == "":
+        return None
+    params = params.replace("$FUNC_PRE{","$FUNC{")
+    params_dic = json.loads(params)
+    times = int(times)
+    numb = int(params_dic.setdefault('numb', -1))
+    if times == -1 and numb > 0:
+        times = int(params_dic['numb'])
+    result = []
+    for i in range(1, times + 1):
+        content = copy.deepcopy(params_dic.setdefault('content',''))
+        unit = run(
+            replace_all_dic_ref_with_max_times(content, params_dic.setdefault('circular_reference_parse_max_times',1),
+                                               params_dic.setdefault('function_dic','')),
+            times)
+        result.append(unit[0])
+    return concat_list_ws(separator,result)
