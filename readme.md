@@ -102,24 +102,24 @@ Example:`eval(1+2)`
 body：
 
     {
-        content:"INSERT INTO table_name (name,age,dateTime) VALUES ('$FUNC{name($REF{p1})}', $FUNC{age()},'$FUNC{dateTimeNow()}')",
-        numb: 5,
-        function_dic:"{p1:$FUNC{name()}}"
+        "content":"INSERT INTO table_name (name,age,dateTime) VALUES ('$FUNC{name($REF{p1})}', $FUNC{age()},'$FUNC{dateTimeNow()}')",
+        "numb": 5,
+        "function_dic":"{\"p1\":\"$FUNC{name()}}\""
     }
     
 
 response:
 
     {
-        result: [
+        "result": [
             "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 23,'2020-07-31 00:35:55')",
             "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 20,'2020-07-31 00:35:55')",
             "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 39,'2020-07-31 00:35:55')",
             "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')",
             "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')"
         ],
-        num: 5,
-        dateTime:"2020-07-31 00:35:55"
+        "num": 5,
+        "dateTime":"2020-07-31 00:35:55"
     }
 
 请求参数描述如下:  
@@ -151,22 +151,22 @@ response:
     
     
     {
-    content:"{\"num\":$REF{num},\"tid\":\"$REF{tid}\",\"orders\":[$FUNC{mock_all_single($REF{order_param},$REF{num},\,)}]}",
-     numb: 5,
-     function_dic:"{
-        "tid": "$FUNC{md5()}",
-        "num":5,
-        "circular_reference_parse_max_times":10,
-        "order_param": "{\"content\": \"{\\\"oid\\\": \\\"$FUNC_PRE{md5()}\\\", \\\"tid\\\": \\\"$REF{tid}\\\"}\", \"numb\": 2, \"circular_reference_parse_max_times\": 10}"
-    }"
+    	"content": "{\"num\":$REF{num},\"tid\":\"$REF{tid}\",\"orders\":[$FUNC{mock_all_single($REF{order_param},$REF{num},\\,)}]}",
+    	"numb": 1,
+    	"function_dic": {
+    		"tid": "$FUNC{md5()}",
+    		"num": 5,
+    		"circular_reference_parse_max_times": 10,
+    		"order_param": "{\"content\": \"{\\\"oid\\\": \\\"$FUNC_PRE{md5()}\\\", \\\"tid\\\": \\\"$REF{tid}\\\"}\", \"numb\": 2, \"circular_reference_parse_max_times\": 10}"
+    	}
     }
 
 
-结果(主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):
+结果(只展示result部分,主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):
     
     
     {
-        "num": 5,
+        "orders_num": 5,
         "tid": "2ce0b0f2e34cd6c3796b15dd53594af9",
     	"orders": [{
     		"oid": "b61668137d1b6f863168dfe769dc1209",
