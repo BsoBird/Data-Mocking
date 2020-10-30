@@ -55,23 +55,23 @@
 <p>body：</p>
 
 <pre><code>{
-    content:&quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},&#39;$FUNC{dateTimeNow()}&#39;)&quot;,
-    numb: 5,
-    function_dic:&quot;{p1:$FUNC{name()}}&quot;
+    &quot;content&quot;:&quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},&#39;$FUNC{dateTimeNow()}&#39;)&quot;,
+    &quot;numb&quot;: 5,
+    &quot;function_dic&quot;:&quot;{\&quot;p1\&quot;:\&quot;$FUNC{name()}}\&quot;&quot;
 }</code></pre>
 
 <p>response:</p>
 
 <pre><code>{
-    result: [
+    &quot;result&quot;: [
         &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 23,&#39;2020-07-31 00:35:55&#39;)&quot;,
         &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 20,&#39;2020-07-31 00:35:55&#39;)&quot;,
         &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 39,&#39;2020-07-31 00:35:55&#39;)&quot;,
         &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,&#39;2020-07-31 00:35:55&#39;)&quot;,
         &quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;梁强&#39;, 27,&#39;2020-07-31 00:35:55&#39;)&quot;
     ],
-    num: 5,
-    dateTime:&quot;2020-07-31 00:35:55&quot;
+    &quot;num&quot;: 5,
+    &quot;dateTime&quot;:&quot;2020-07-31 00:35:55&quot;
 }</code></pre>
 
 <p>请求参数描述如下:  </p>
@@ -91,20 +91,20 @@
 <p>请求体:</p>
 
 <pre><code>{
-content:&quot;{\&quot;num\&quot;:$REF{num},\&quot;tid\&quot;:\&quot;$REF{tid}\&quot;,\&quot;orders\&quot;:[$FUNC{mock_all_single($REF{order_param},$REF{num},\,)}]}&quot;,
- numb: 5,
- function_dic:&quot;{
-    &quot;tid&quot;: &quot;$FUNC{md5()}&quot;,
-    &quot;num&quot;:5,
-    &quot;circular_reference_parse_max_times&quot;:10,
-    &quot;order_param&quot;: &quot;{\&quot;content\&quot;: \&quot;{\\\&quot;oid\\\&quot;: \\\&quot;$FUNC_PRE{md5()}\\\&quot;, \\\&quot;tid\\\&quot;: \\\&quot;$REF{tid}\\\&quot;}\&quot;, \&quot;numb\&quot;: 2, \&quot;circular_reference_parse_max_times\&quot;: 10}&quot;
-}&quot;
+	&quot;content&quot;: &quot;{\&quot;num\&quot;:$REF{num},\&quot;tid\&quot;:\&quot;$REF{tid}\&quot;,\&quot;orders\&quot;:[$FUNC{mock_all_single($REF{order_param},$REF{num},\\,)}]}&quot;,
+	&quot;numb&quot;: 1,
+	&quot;function_dic&quot;: {
+		&quot;tid&quot;: &quot;$FUNC{md5()}&quot;,
+		&quot;num&quot;: 5,
+		&quot;circular_reference_parse_max_times&quot;: 10,
+		&quot;order_param&quot;: &quot;{\&quot;content\&quot;: \&quot;{\\\&quot;oid\\\&quot;: \\\&quot;$FUNC_PRE{md5()}\\\&quot;, \\\&quot;tid\\\&quot;: \\\&quot;$REF{tid}\\\&quot;}\&quot;, \&quot;numb\&quot;: 2, \&quot;circular_reference_parse_max_times\&quot;: 10}&quot;
+	}
 }</code></pre>
 
-<p>结果(主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):</p>
+<p>结果(只展示result部分,主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):</p>
 
 <pre><code>{
-    &quot;num&quot;: 5,
+    &quot;orders_num&quot;: 5,
     &quot;tid&quot;: &quot;2ce0b0f2e34cd6c3796b15dd53594af9&quot;,
 	&quot;orders&quot;: [{
 		&quot;oid&quot;: &quot;b61668137d1b6f863168dfe769dc1209&quot;,
@@ -148,6 +148,6 @@ content:&quot;{\&quot;num\&quot;:$REF{num},\&quot;tid\&quot;:\&quot;$REF{tid}\&q
 
 <h3>Get Help:</h3>
 
-<p>The fastest way to get response  is to send email to our mail list lisoda@yeah.net or 879158514@qq.com.
-    And welcome your advice.</p>
+<p>The fastest way to get response  is to send email to our mail list lisoda@yeah.net , 838331258@qq.com or 879158514@qq.com.
+    And welcome your advice.  </p>
 </body>
