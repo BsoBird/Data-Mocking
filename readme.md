@@ -153,10 +153,10 @@ response:
     {
     	"content": "{\"orders_num\":$REF{num},\"tid\":\"$REF{tid}\",\"orders\":[$FUNC{mock_all_single($REF{order_param},$REF{num},\\,)}]}",
     	"numb": 1,
+    	"circular_reference_parse_max_times": 10,
     	"function_dic": {
     		"tid": "$FUNC{md5()}",
     		"num": 5,
-    		"circular_reference_parse_max_times": 10,
     		"order_param": "{\"content\": \"{\\\"oid\\\": \\\"$FUNC_PRE{md5()}\\\", \\\"tid\\\": \\\"$REF{tid}\\\"}\", \"numb\": 2, \"circular_reference_parse_max_times\": 10}"
     	}
     }
