@@ -108,6 +108,7 @@ def mock_default(params="", times=-1,separator=""):
     if params == "":
         return None
     params = params.replace("$FUNC_PRE{","$FUNC{")
+    params = params.replace("$REF_PRE{","$REF{")
     params_dic = json.loads(params)
     times = int(times)
     numb = int(params_dic.setdefault('numb', -1))
@@ -126,6 +127,7 @@ def mock_all_single(params="", times=-1,separator=""):
     if params == "":
         return None
     params = params.replace("$FUNC_PRE{","$FUNC{")
+    params = params.replace("$REF_PRE{","$REF{")
     params_dic = json.loads(params)
     times = int(times)
     numb = int(params_dic.setdefault('numb', -1))
