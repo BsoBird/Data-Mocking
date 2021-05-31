@@ -10,7 +10,7 @@ app = FastAPI()
 class Item(BaseModel):
     content: str
     numb: int
-    circular_reference_parse_max_times: int
+    circular_reference_parse_max_times: int = 1
     function_dic: dict = None
 
 
