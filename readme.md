@@ -114,7 +114,7 @@ body：
     {
         "content":"INSERT INTO table_name (name,age,dateTime) VALUES ('$FUNC{name($REF{p1})}', $FUNC{age()},'$FUNC{dateTimeNow()}')",
         "numb": 5,
-        "function_dic":"{\"p1\":\"$FUNC{name()}}\""
+        "function_dic":{"p1":"$FUNC{name()}"}
     }
     
 

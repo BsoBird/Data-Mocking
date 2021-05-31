@@ -57,7 +57,7 @@
 <pre><code>{
     &quot;content&quot;:&quot;INSERT INTO table_name (name,age,dateTime) VALUES (&#39;$FUNC{name($REF{p1})}&#39;, $FUNC{age()},&#39;$FUNC{dateTimeNow()}&#39;)&quot;,
     &quot;numb&quot;: 5,
-    &quot;function_dic&quot;:&quot;{\&quot;p1\&quot;:\&quot;$FUNC{name()}}\&quot;&quot;
+    &quot;function_dic&quot;:{"p1":"$FUNC{name()}"}
 }</code></pre>
 
 <p>response:</p>
