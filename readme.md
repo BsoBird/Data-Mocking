@@ -7,6 +7,7 @@ and there are some complex scenarios, so that people do not see the desire to wr
 - On the basis of the above, it is extended to multi-level associations and multi-field associations (star model scenario, snowflake model scenario).
 - You've got the above scenarios down, and then the requirements change. because odds are you have hard-coded code.
 - Blah blah blah ........
+
 Against this background, Data-Mocking was born. Its initial intention is to free us from the complexity of the requirements of the scene, so that the user focuses only on the data model and business logic, to achieve flexible configuration, reduce the workload and improve productivity.
 
 ## brief introduction
