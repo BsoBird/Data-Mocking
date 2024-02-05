@@ -6,7 +6,7 @@ import sys
 
 from base.parser import parse_string_value
 
-fake = Faker("zh-cn")
+fake = Faker()
 
 
 def company(arg=None):
