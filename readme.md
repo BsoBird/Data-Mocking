@@ -1,113 +1,110 @@
 # Data-Mocking
-## 需求背景
-在日常开发,测试的过程中,我们常常会碰到各种各样奇奇怪怪的造数据的需求,大部分情况下我们是针对需求定制化开发mock程序,但是这种程序往往不可复用,开发过程也费时费力。
-且存在一些复杂场景,让人一看就没有自己写代码Mock数据的欲望,例如如下几个场景:  
-- 生成大量具有N(N>50)个字段的xxx,每个字段都有一定的规则需求
-- 生成大量具有N(N>50)个字段的主子xx,且需要保持关联关系
-- 在上面的基础上,扩展为多级关联关系,多字段关联(星型模型场景,雪花模型场景)。
-- 好不容易你搞好了上面几个场景,然后需求变动了.当你强行压制住你的杀意改好了需求后,需求又变了:anger:,因为大概率你的代码中有硬编码.
-- 等等等等........  
-在这样的背景下,Data-Mocking就诞生了。它的初衷就是希望将我们从复杂的需求场景中解脱出来,让使用者只关注数据模型与业务逻辑,实现灵活配置,降低工作量,提高生产力。
+## background
+In the daily development, testing process, we often encounter a variety of strange data creation needs, most of the time we are customised for the needs of the development of mock program, but this program is often not reusable, the development process is also time-consuming and laborious.
+and there are some complex scenarios, so that people do not see the desire to write their own code Mock data, such as the following scenarios.
+- Generate a large number of xxx with N(N>50) fields, each with certain rule requirements
+- Generate a large number of master-child xx with N(N>50) fields, and need to maintain the association relationship
+- On the basis of the above, it is extended to multi-level associations and multi-field associations (star model scenario, snowflake model scenario).
+- You've got the above scenarios down, and then the requirements change. because odds are you have hard-coded code.
+- Blah blah blah ........
+Against this background, Data-Mocking was born. Its initial intention is to free us from the complexity of the requirements of the scene, so that the user focuses only on the data model and business logic, to achieve flexible configuration, reduce the workload and improve productivity.
 
-## 简介
+## brief introduction
 
-##### 1、Data-Mocking是什么？
+##### 1. What is Data-Mocking？
 
-  他是一个模拟数据生成器。我们在测试过程中，产生完整、全面的真实数据可能比较困难。
-  我们可以根据需求，创建对应的模版和词典，利用数据模拟生成器生成我们需要的模拟数据。
+  It is a simulated data generator. It may be difficult to generate complete and comprehensive real data during our testing.
+  We can create the corresponding templates and dictionaries according to the requirements and use the data simulation generator to generate the simulated data we need.
 
-##### 2、Data-Mocking能做什么？
+##### 2. What Data-Mocking can do?
 
-  他能够根据构建的模版和词典，生成我们需要的数据。kafka需要的数据，hive中文件存储数据，接口中JSON数据等等，只要有数据格式，都可以设置成需要的模板。
+  It can generate the data we need based on the templates and dictionaries we build. kafka data, file storage data in hive, JSON data in interfaces, etc., as long as there is a data format, you can set up the template you need.
 
-##### Data-Mocking三个应用场景：
+##### Three application scenarios for Data-Mocking：
 
-*   **测试场景**
+*   **Test scenarios**
 
-    测试过程中，我们需要验证数据后端的功能或性能，此时，需要降低与数据产生端的耦合，那么需要一个稳定优秀的数据生成器，来持续的不间断的产生正确的数据，和特殊情况下的异常数据。
+    Testing process, we need to verify the functionality or performance of the data back-end, at this time, the need to reduce the coupling with the data generating end, then a stable and excellent data generator is needed to continue to uninterruptedly generate the correct data, and special cases of abnormal data.
 
-*   **持续集成场景**
+*   **Continuous Integration Scenarios**
 
-    在整个持续集成场景中，一个或多个模块组成一个平台，需要有源源不断的数据进入持续集成环境，用以自动化地完成测试和迭代工作，使用Data-Mocking则可以通过数据样本的指定和简单的编码，非常简单地完成这个需求。
+    In a continuous integration scenario, one or more modules form a platform that requires a constant flow of data into the continuous integration environment to automate testing and iteration, which can be accomplished very simply by specifying data samples and simple coding using Data-Mocking.
 
-*   **生产场景**
+*   **Prod scenarios**
 
-    在一个项目完成测试和迭代，发布到生产环境之后，通常也需要进行持续的功能或可用性监测，那么则需要有各种正常或异常数据按照某种规则和定义，持续稳定地生产并送回平台，此时将持续集成场景中的case，只需通过简单配置，则可以进行生产的验证，以满足这个需求。
+    In a project to complete the testing and iteration, released to the production environment, usually also need to carry out continuous functionality or usability monitoring, then there is a need for a variety of normal or abnormal data in accordance with certain rules and definitions, continuous and stable production and sent back to the platform, at this time will be a continuous integration scenario of the case, just through a simple configuration, can be verified by the production in order to meet this demand.
 
-##### 3、架构
+##### 3. architecture
 
-  数据生成器包括：模版变量提取，模版变量执行，模版变量替换三部分组成.
+  The data generator consists of three parts: template variable extraction, template variable execution, and template variable replacement.
 
-##### 4、术语：
+##### 4. term：
 
-*   **函数变量**:模版和词典中以`$FUNC{`开头,以`}`结尾的字符串是一个函数变量.形如：`$FUNC{intRand()}`. 其中,intRand()为内置函数. 支持函数嵌套.  
-*   **预编译函数变量**:模版和词典中以`$FUNC_PRE{`开头,以`}`结尾的字符串是一个预编译函数变量.形如：`$FUNC_PRE{intRand()}`. 其中,intRand()为内置函数. 支持函数嵌套.预编译函数只在子模板执行的情况下才会生效,一般场景下他就是一个字符串。
-*   **模板变量**：模版中以`$REF{`开头，以`}`结尾的字符串是一个词典变量。形如：`$REF{name}`,其中，name为词典中的一个词典名。允许模板变量相互引用。
- example:`$FUNC{dateStringWithRange($FUNC{long(123456789)},$FUNC{timestamp()},$REF{test_name})}`  
-*   **预编译模板变量**:类似于预编译函数变量
+* **Function variables**: Strings in templates and dictionaries that begin with `$FUNC{` and end with `}` are function variables. For example: `$FUNC{intRand()}`. Where intRand() is a built-in function. Nested functions are supported.
+* **Precompiled function variables**: Strings in templates and dictionaries that begin with `$FUNC_PRE{` and end with `}` are a precompiled function variable. Example: `$FUNC_PRE{intRand()}`. Where intRand() is a built-in function. Nested functions are supported. The pre-compiled function will only take effect when the sub-template is executed, in general he is a string.
+* **Template variable**: A string in the template starting with `$REF{` and ending with `}` is a dictionary variable. Shape: `$REF{name}`, where name is the name of a dictionary in the lexicon. Template variables are allowed to reference each other.
+ example:`$FUNC{dateStringWithRange($FUNC{long(123456789)},$FUNC{timestamp()},$REF{test_name})}`
+* **Pre-compiled template variables**: similar to pre-compiled function variables
 
-##### 5、内置函数
+##### 5. Built in functions
 
-*   **可调用任意python基本函数,支持pyhton风格的函数传参.**
+* **Can call any python basic function, supports pyhton style function passing.**
 Example:`$FUNC{name(a=1,b=2)}`
 
-*   **eval(str)**
-**可执行任意python语句的表达式,若无法执行,则返回原值.**
+* **eval(str)**
+**Expressions that can execute any python statement, or return the original value if they cannot be executed. **
 Example:`eval(1+2)`
 
-*   concat(*args)
-将传入的参数列表作为字符串拼接.
+* **concat(args....)**
+Splice the incoming argument list as a string.
 
-*   concat_ws(tag, *args)
-将传入的参数列表按照指定的分隔符拼接.
+* **concat_ws(tag,args...)**
+Splits the list of incoming arguments by the specified separator.
 
-*   **Faker 模块中的任意mock数据的方法(目前faker的locate在这里被设置为了`zh-ch`,暂不支持变更locate).**
-详见`https://pypi.org/project/Faker/`
-中文相关文档`https://zhuanlan.zhihu.com/p/87203290`
+* **The methods for arbitrary mock data in the Faker module are detailed in `https://pypi.org/ project/Faker/`.**
 
-*   name(arg=None)若传入值,则返回传入值.否则随机生成name.
+* **name(arg=None)** Returns the passed-in value if passed in. Otherwise, name is randomly generated.
 
-*   company(arg=None)
-获取公司名称,若传入参数,则返回传入值,否则将随机生成.
+* **company(arg=None)**
+Get the name of the company, if the parameter is passed in, then return the value passed in, otherwise it will be randomly generated.
 
-*   age(arg=None)
-获取随机的年龄,若传入参数,则返回传入值,否则将随机生成15~60内的数字.
+* **age(arg=None)**
+Get a random age, if you pass in a parameter, return the passed in value, otherwise it will generate a random number within 15~60.
 
-*   Id(arg=None)
-获取随机的ID,若传入参数,则返回传入值,否则将随机生成111111111111111111~911111111111111111内的数字.
+* **Id(arg=None)**
+Get a random ID, if you pass in a parameter, return the passed in value, otherwise it will generate a random number within 1111111111111111~9111111111111111.
 
-*   timeNow(arg=None)
-若传入参数,则返回传入值,否则将生成当前时间的时分秒.
+* **timeNow(arg=None)**
+If passed a parameter, it returns the passed value, otherwise it generates the hour, minute and second of the current time.
 
-*   dateNow(arg=None)
-若传入参数,则返回传入值,否则将生成当前时间的年月日.
+* **dateNow(arg=None)**
+If you pass a parameter, it returns the passed value, otherwise it generates the year, month and day of the current time.
 
-*   dateTimeNow(arg=None)
-若传入参数,则返回传入值,否则将生成当前时间的年月日时分秒.  
+* **dateTimeNow(arg=None)**
+If you pass a parameter, it returns the passed value, otherwise it generates the year, month, day, hour, minute and second of the current time.
 
-*   quote_escaped(str_val)
-将文字中的没有被转义的单引号与双引号进行转义.  
+* **quote_escaped(str_val)**
+Escapes unescaped single and double quotes in text.
 
-*   quote_replacement(str_val)
-将字符串中的 $ 与 \ 进行转义.  
+* **quote_replacement(str_val)**
+Escape $ and \ in a string.
 
-*   **mock_default(mock_template,exec_times,result_concat_separator)** 
-**我们支持在模板中利用另一个模板来生成数据,这种场景通常用于生成有嵌套结构,且内外层数据之间有关联关系**。参数描述如下:  
-    * `mock_template` : 传入的json模板,模板内容参照`章节6`  
-    * `exec_times` : 模板执行次数,若传入-1且模板内`numb`属性大于0,则使用`numb`
-    * `result_concat_separator` : 执行结果拼接的间隔符。因为生成的结果一定是字符串,所以只提供拼接功能。
+* **mock_default(mock_template,exec_times,result_concat_separator)**
+We support the use of another template in the template to generate data, this scenario is usually used to generate a nested structure, and there is a correlation between the inner and outer data **. The parameters are described as follows.
+    * :: `mock_template`: incoming json template, refer to `Chapter 6` for template content.
+    * :: `exec_times` : the number of times the template is executed, if -1 is passed and the `numb` attribute in the template is greater than 0, then `numb` is used.
+    * :: `result_concat_separator` : A spacer to perform result concatenation. Since the result must be a string, only the concatenation function is provided.
 
-*   **mock_all_single(mock_template,exec_times,result_concat_separator)**
-**与`mock_default`方法接近,但是它与上面的区别是每次执行模板都是独立执行,保证不会生成相同数据**
+* **mock_all_single(mock_template,exec_times,result_concat_separator)**
+** Close to the `mock_default` method, but it differs from the above in that each execution of the template is independent, ensuring that the same data is not generated**.
 
-##### 6、基本使用指南
+##### 6、Basic usage guide
 
-请使用post请求:  
-- `http://host:port/help`  查看说明文档  
-- `http://host:port/mockData`  产生N条不相同的数据
-- `http://host:port/mockData/allsame`  产生N条完全相同的数据
+Please use post request:  
+- `http://host:port/mockData`  Generate N different pieces of data
+- `http://host:port/mockData/allsame`  Generate N identical data
 
-下面是一个DEMO演示.  
+Below is a demo.  
 
 body：
 
@@ -122,45 +119,43 @@ response:
 
     {
         "result": [
-            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 23,'2020-07-31 00:35:55')",
-            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 20,'2020-07-31 00:35:55')",
-            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 39,'2020-07-31 00:35:55')",
-            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')",
-            "INSERT INTO table_name (name,age,dateTime) VALUES ('梁强', 27,'2020-07-31 00:35:55')"
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('Kim', 23,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('Kim', 20,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('Kim', 39,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('Kim', 27,'2020-07-31 00:35:55')",
+            "INSERT INTO table_name (name,age,dateTime) VALUES ('Kim', 27,'2020-07-31 00:35:55')"
         ],
         "num": 5,
         "dateTime":"2020-07-31 00:35:55"
     }
 
-请求参数描述如下:  
+The request parameters are described as follows:  
 
-*   **`content` 待替换的模板**
-*   **`numb` 一次生成多少条数据,一次生成不能超过1W条**
-*   **`function_dic` 模板方法列表,可缺省**。模板方法可以保证在一次mock数据的过程中,同样的模板生成的值始终相同.该列表中允许出现任意合法的`content`(字符串,方法......).
- 该参数可缺省,若缺省该参数,则不执行模板替换.若传入了该参数,但是传入的字典中没有`content`中出现的待替换的模板,则异常.支持模板方法之间相互引用.  
-*   **`circular_reference_parse_max_times` 循环引用最大解析次数,默认为1,可缺省**。由于在`function_dic`中,我们允许模板方法之间相互引用,那么就存在N个模板相互引用形成循环引用的问题。
-由于无限解析会出现死循环,这里我们做出限制,对于模板引用的解析只能执行N次,N次过后不再执行解析,会将形如`$REF{XXX}`的串直接返回。由于每解析一次,会将原串替换,最终并不能保证返回使用者处时传入的`$REF{XXX}`串。
- ##### 7、高阶使用指南
- * **特殊分隔符**。我们有时需要使用特殊分隔符来拼接字符串产生结果,例如造hive的数据文件。由于python json包限制的原因,特殊字符需要传入对应的unicode码。例如`\x01`需要写`\u0001`
- * **使用逗号拼接**。由于在函数解析的过程中,逗号往往是参数列表分隔的标识,而很多时候我们希望使用逗号拼接内容,这里我们处理成传入`\,` 来标识,涉及到的函数有`concat_ws`,`mock_default`,`mock_all_single`(详见example)。
- * **空白符的使用**。由于在内部实现中,所有的方法的入参全部被trim了一次,因此,如果想实现类似给一个字符串拼接一个空白字符的功能,类似`concat('   ','a')`,是不能直接使用Function实现的。
- 但是可以稍作变通,我们可以采取形如这样的方式实现`$FUNC{t1()}       $FUNC{t2()}`,在模板中留空白,这样就可以变相实现功能
- * **模板方法列表**。对于过于复杂的模板片段,可以将它写入模板方法列表,在主模板中引用该片段即可,但这样做之后,该批次生成的数据,被引用的模板方法会生成完全相同的数据,若想生成不同的数据,需要调用多次。  
- * **子模板使用指南**。我们支持使用`mock_default`和`mock_all_single` 方法通过子模板来生成数据,并将结果在主模板中使用。**通常,子模板是为了应对mock嵌套结构且存在关联关系的数据。若需要生成非嵌套结构的具有关联关系的数据,当前版本需要使用者先将它做成嵌套结构,然后自己在外面拆开。**
- 对于子模板,由于其可能较为复杂,我们最好将它也写入模板方法列表中。子模板的使用需要注意如下几点:
-     * 由于整个模板引擎执行的过程中,是按照 `执行模板方法列表` -> `将执行模板方法列表执行结果替换主模板`  -> `执行模板中出现的方法(自顶向下LL)`  -> `将执行方法的结果替换模板`
-     这样的顺序执行的。如果子模板中存在方法,那么会被优先执行,最终导致子模板执行的结果可能是完全一致的。若需要避免这种情况,子模板中的函数定义应使用`$FUNC_PRE{`.
-     **底层方案**:`$FUNC_PRE{`不会触发方法执行,所有可以保证形如`$FUNC_PRE{xxx}`的串可以原样传入方法,在`mock_default`和`mock_all_single`方法中,会先将`$FUNC_PRE{`替换为`$FUNC`,
-     这样再执行子模板就又可以触发方法执行。  
-     * 子模板中若存在方法引用,会存在如下情况:
-         * 子模板中存在预编译方法引用,则可以保证子模板会使用自己的模板变量。
-         * 在父模板的循环引用解析次数足够大的情况下,会使用父模板中的模板方法列表进行替换,不会使用自己的,以此递归向下(如果你的子模板还套了子模板)
-         * 父模板的循环引用解析次数不够大的情况下,子模板中的`$REF{xxx}`串不会被替换干净,这时候在执行mock方法时会使用子模板的方法引用,**但此种方法可控性相比之前较差一些,需要使用者有绝对把握**
+*   **`content` Template to be replaced**
+*   **`numb` How many pieces of data can be generated at once, and cannot exceed 10000 pieces at a time**
+*   **`function_dic` Template method list, can be defaulted**.The template method ensures that the same template will always generate the same value in a single mock. Any legal `content` (string, method ......) is allowed in this list. .
+ This parameter can be defaulted, and if it is, no template replacement is performed. If this parameter is passed, but the template to be replaced does not appear in 'content' in the passed dictionary, an exception is thrown. Cross-referencing between template methods is supported. 
+*   **`circular_reference_parse_max_times` Maximum number of parsing times for circular references, default to 1, can be defaulted**。Since in `function_dic` we allow template methods to refer to each other, then there is the problem of N templates referencing each other to form circular references.
+Since infinite parsing will result in a dead loop, here we make a restriction that the parsing of template references can only be performed N times, and after N times no more parsing will be performed, and the string like `$REF{XXX}` will be returned directly. Since the original string will be replaced every time, it is not guaranteed to return the `$REF{XXX}` string passed to the user.
+ ##### 7. Advanced User Guide
+ * **Special delimiter**.Sometimes we need to use special delimiters to concatenate strings to produce results, such as building hive data files. Due to the limitations of the python json package, special characters need to be passed the corresponding unicode code. For example, \x01` needs to be written as \u0001`.
+ * **Splicing with commas**.Since commas are often used to separate argument lists during function parsing, and many times we want to use commas to splice the contents, we handle this by passing in \, \ to identify the functions \cat_ws`, \mock_default`, and \mock_all_single` (see example for details).
+ * **The use of blank spaces**.Because in the internal implementation, all the methods are trimmed once, if you want to implement a function like splicing a blank character into a string, like `concat(' ','a')`, you can't use Function to implement it directly.
+ But can be slightly modified, we can take the form of this way to achieve `$FUNC{t1()} $FUNC{t2()}`, in the template to leave a blank, so you can disguise the implementation of the function
+ * **Template Method List**.For too complex template fragments, it can be written into the template method list, in the main template to refer to the fragment can be, but after doing so, the batch of data generated by the referenced template method will generate the exact same data, if you want to generate different data, you need to call multiple times.  
+ * **Guidelines for using sub templates**. We support the use of the `mock_default` and `mock_all_single` methods to generate data through sub-templates and use the results in the main template. **Typically, sub-templates are designed to handle mock nested data with associative relationships. If you need to generate non-nested data with associative relationships, the current version requires the user to first make it nested, and then split it up outside.**
+ For sub-templates, since they can be complex, it is best to include them in the list of template methods. The use of sub-templates requires the following attention:
+     * Since the whole template engine execution process, is in accordance with the `Execute template method list` -> `Execute template method list execution results to replace the main template` -> `Execute template appearing in the method (top-down LL)` -> `Execute the method results to replace the template` such a sequence of execution. If a method exists in a sub-template, it will be executed first, and the sub-templates may end up executing exactly the same result. To avoid this, function definitions in sub-templates should use `$FUNC_PRE{`.
+     **Implementation**: `$FUNC_PRE{` will not trigger the method execution, so it is guaranteed that strings like `$FUNC_PRE{xxx}` can be passed into the method as it is, and `$FUNC_PRE{` will be replaced by `$FUNC` in the `mock_default` and `mock_all_single` methods so that the sub-templates can trigger the method execution again. method execution is triggered again by executing the sub-template.
+     * If there is a method reference in the sub-template, the following situation exists:
+         * The presence of pre-compiled method references in a sub-template ensures that the sub-template will use its own template variables.
+         * If the parent template's circular reference resolution is large enough, it will use the parent template's list of template methods to replace them, not its own, and thus recursively work its way down (if your child template also has a child template).
+         * If the parent template's circular reference resolution is not large enough, the `$REF{xxx}` string in the child template will not be cleanly replaced, and then the child template's method references will be used in the execution of the mock method, **but this method is less controllable than the previous one, and requires absolute certainty on the part of the user**.
 
 
-`Example`(生成嵌套结构的,内外有关联关系的主子订单结构):
+`Example`(Generate a nested structure with a primary and secondary order structure that is related both internally and externally):
 
-请求体:
+request body:
     
     
     {
@@ -175,7 +170,7 @@ response:
     }
 
 
-结果(只展示result部分,主订单ID一致,子订单各不相同,外部的子订单个数num字段与实际orders中的子订单个数一致):
+Result (only the result section is displayed, with the main order ID consistent and each sub order different. The number of external sub orders in the num field is consistent with the actual number of sub orders in the orders):
     
     
     {
@@ -203,33 +198,26 @@ response:
 
      
          
-### 安装：
-安装：  
+### install：
+install:  
 ```
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple fastapi pydantic faker     
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple  uvicorn
 ```
 
-### 启动：
-在api.py目录下执行：
+### start-up：
 ```
 uvicorn api:app --port 8001 --host 0.0.0.0 --reload
 ```
 
-### 结构说明：
+### Structural Description：
 ```
-base目录        -模板处理，将文件解析成可识别函数
-func_maker      -函数集，造数据所有的函数都来自这里
-api.py          -接口启动文件
+base directory  -Template processing, parsing files into recognizable functions
+func_maker      -function list
+api.py          -start-up
 ```
-### 下一步目标(个人水平有限,欢迎各位贡献代码):
-* 模板的再封装,将常用功能傻瓜化
-* 非嵌套结构存在关联关系的数据如何更方便的展示与使用
-* 允许用户上传并执行自定义方法(python文件,jar包等)
-* 前端ui
-* ............
 
 
 ### Get Help:
-The fastest way to get response  is to send email to our mail list lisoda@yeah.net , 838331258@qq.com or 879158514@qq.com.
+The fastest way to get response  is to send email to our mail list plashspeed@foxmail.com.
 And welcome your advice.  
